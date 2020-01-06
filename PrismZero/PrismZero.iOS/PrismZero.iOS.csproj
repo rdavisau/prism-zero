@@ -189,8 +189,10 @@
     <Reference Include="Xamarin.iOS" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Prism.Forms">
+      <Version>7.2.0.1422</Version>
+    </PackageReference>
     <PackageReference Include="Xamarin.Forms" Version="4.4.0.991265" />
-    <PackageReference Include="Prism.DryIoc.Forms" Version="7.2.0.1422" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PrismZero\PrismZero.csproj">

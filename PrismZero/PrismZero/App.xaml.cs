@@ -19,6 +19,11 @@ namespace PrismZero
 
         public App(IPlatformInitializer initializer) : base(initializer) { }
 
+        protected override IContainerExtension CreateContainerExtension()
+        {
+            throw new System.NotImplementedException();
+        }
+
         protected override async void OnInitialized()
         {
             InitializeComponent();
