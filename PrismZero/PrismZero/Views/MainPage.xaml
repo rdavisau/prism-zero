@@ -6,7 +6,7 @@
              Title="{Binding Title}">
 
     <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
-        <Label Text="Welcome to Xamarin Forms and Prism!" />
+        <Label x:Name="MyLabel" Text="Welcome to Xamarin Forms and Prism!" />
     </StackLayout>
 
 </views:BasePage>
