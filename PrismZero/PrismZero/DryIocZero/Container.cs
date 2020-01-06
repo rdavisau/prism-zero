@@ -32,7 +32,7 @@ namespace DryIocZero
     using System.Reflection;
     using System.Text;
     using System.Threading;
-    using ImTools;
+    using ImTools.Zero;
 
     /// <summary>Minimal container to register service factory delegates and then resolve service from them.</summary>
     [SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly",

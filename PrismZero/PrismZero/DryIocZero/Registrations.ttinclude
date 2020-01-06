@@ -9,12 +9,22 @@
 // - When specifying assembly path, you may use $(SolutionDir), $(ProjectDir), $(Configuration) parameters.
 //
 #>
+<#@ assembly Name="netstandard" #>
 <#@ assembly Name="System.Core" #>
 <#@ assembly Name="$(DryIocAssembly)" #>
+<#@ assembly Name="$(ProjectDir)\bin\$(Configuration)\netstandard2.0\PrismZero.dll" #>
+<#@ assembly Name="%USERPROFILE%\.nuget\packages\microsoft.extensions.dependencymodel\3.1.0\lib\netstandard2.0\Microsoft.Extensions.DependencyModel.dll" #>
+<#@ assembly Name="%USERPROFILE%\.nuget\packages\system.text.json\4.7.0\lib\netstandard2.0\system.text.json.dll" #>
+<#@ assembly Name="%USERPROFILE%\.nuget\packages\system.runtime.compilerservices.unsafe\4.7.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll" #>
+<#@ assembly Name="%USERPROFILE%\.nuget\packages\system.buffers\4.4.0\lib\netstandard2.0\System.Buffers.dll" #>
+<#@ import Namespace="System" #>
+<#@ import Namespace="System.Collections.Generic" #>
+<#@ import Namespace="System.Linq" #>
+<#@ import Namespace="System.Reflection" #> 
 <#@ import Namespace="DryIoc" #>
 <#@ import Namespace="ImTools" #>
-<#// TODO: Insert assemblies and namespaces of your services to be registered in container #>
 <#+
+
 // TODO: Specify the container and registrations ...
 IContainer GetContainerWithRegistrations()
 {
@@ -46,4 +56,64 @@ string[] NamespaceUsings =
 {
     //"Foo.Bar.Buzz",
 };
+
+public System.Reflection.Assembly LoadAssemblyWithDependencies(string assemblyPath)
+{
+	var coreLibPath = assemblyPath;
+	var nuget = System.Environment.ExpandEnvironmentVariables(@"%USERPROFILE%\.nuget\packages");
+
+	var dependencyContext =
+		Microsoft.Extensions.DependencyModel.DependencyContextLoader
+			.Default.Load(System.Reflection.Assembly.LoadFrom(coreLibPath));
+
+	var libs =
+		dependencyContext
+			.RuntimeLibraries
+			.SelectMany(r => r.RuntimeAssemblyGroups.SelectMany(bb => bb.RuntimeFiles),
+				(r, bb) => new { r.Name, r.Version, bb.Path })
+			.Where(r => !r.Name.StartsWith("runtime."))
+			.Skip(1) // the dll comes first
+			.ToList();
+
+	foreach (var l in libs)
+	{
+		try 
+        {
+		    System.Reflection.Assembly.LoadFrom(System.IO.Path.Combine(nuget, l.Name, l.Version, l.Path));
+		} 
+		catch (Exception ex)
+		{
+            // break here to make sure nothing important is failing
+            // non-package assemblies will definitely fail
+		}
+	}
+	var coreLib = System.Reflection.Assembly.LoadFrom(coreLibPath);
+
+	return coreLib;
+}
+
+public Type FindType(string name)
+{
+    return System
+        .AppDomain
+        .CurrentDomain
+        .GetAssemblies()
+        .SelectMany(GetLoadableTypes)
+        .FirstOrDefault(t => t.FullName.EndsWith(name));
+}
+
+public IEnumerable<Type> GetTypesFromAssembly(Assembly asm, Func<Type, bool> predicate)
+{
+    foreach (var t in asm.GetLoadedTypes())
+        if(predicate(t))
+            yield return t;
+}
+
+public static IEnumerable<Type> GetLoadableTypes(Assembly assembly)
+{
+    if (assembly == null) throw new ArgumentNullException(nameof(assembly));
+
+    try { return assembly.GetTypes(); }
+    catch (ReflectionTypeLoadException e) { return e.Types.Where(t => t != null); }
+}
 #>
