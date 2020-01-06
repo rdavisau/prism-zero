@@ -1,5 +1,7 @@
-﻿using Prism;
+﻿using DryIocZero;
+using Prism;
 using Prism.Ioc;
+using PrismZero.DryIocZero;
 using PrismZero.ViewModels;
 using PrismZero.Views;
 using Xamarin.Forms;
@@ -10,31 +12,42 @@ namespace PrismZero
 {
     public partial class App
     {
-        /* 
-         * The Xamarin Forms XAML Previewer in Visual Studio uses System.Activator.CreateInstance.
-         * This imposes a limitation in which the App class must have a default constructor. 
-         * App(IPlatformInitializer initializer = null) cannot be handled by the Activator.
-         */
+        public new IZeroContainer Container;
+
         public App() : this(null) { }
 
         public App(IPlatformInitializer initializer) : base(initializer) { }
 
         protected override IContainerExtension CreateContainerExtension()
         {
-            throw new System.NotImplementedException();
+            var container = new Container();
+            var extension = new DryIocZeroContainerExtension(container);
+
+            // plug the containerextension placeholder
+            container.UseInstance<IContainerExtension>(extension);
+
+            Container = container;
+
+            return extension;
+        }
+
+        protected override void RegisterRequiredTypes(IContainerRegistry _)
+        {
+            // intercept the call to base
+            // since we already registered the required types at compile time
+        }
+
+        protected override void RegisterTypes(IContainerRegistry _)
+        {
+            // call our auto-generated page wireup method
+            Container.RegisterPageTypes();
         }
 
         protected override async void OnInitialized()
         {
             InitializeComponent();
-
+            
             await NavigationService.NavigateAsync("NavigationPage/MainPage");
-        }
-
-        protected override void RegisterTypes(IContainerRegistry containerRegistry)
-        {
-            containerRegistry.RegisterForNavigation<NavigationPage>();
-            containerRegistry.RegisterForNavigation<MainPage, MainPageViewModel>();
         }
     }
 }
