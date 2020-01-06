@@ -136,8 +136,43 @@ using <#=ns#>;
 
 namespace DryIocZero
 {
-    partial class Container
-    {
+    partial class Container : PrismZero.DryIocZero.IZeroContainer
+    {    
+        [ExcludeFromCodeCoverage]
+        public void RegisterPageTypes()
+        {<# 
+            foreach (var pt in PageTypes)
+            {#>  
+            // <#=pt#>
+            {
+                var pageType = typeof(<#=pt.Page#>);
+                var vmType = typeof(<#=pt.ViewModel#>);
+
+                Prism.Mvvm.ViewModelLocationProvider.Register(pageType.Name, vmType);
+                Prism.Navigation.PageNavigationRegistry.Register(pageType.Name, pageType);
+            }
+<#
+            }   
+#>
+        }
+
+        public bool IsRegistered(Type type, object key = null)
+        {
+<# foreach (var rs in RegisteredServices) {#>
+<# var typeName = rs.type.IsGeneric() ? rs.type.GetGenericTypeDefinition().FullName.Replace("`1", $"<{rs.type.GetGenericArguments()[0].FullName}>") : rs.type.FullName; #>
+<# if (rs.key == null) {#>
+            if (type == typeof(<#=typeName#>) && key is null)
+                return true;
+            else 
+<#} else {#>
+            if (type == typeof(<#=typeName#>) && key.Equals("<#=rs.key#>"))
+                return true;
+            else
+<#} #>
+<#}#>
+            return false;
+        }
+
         [ExcludeFromCodeCoverage]
         partial void GetLastGeneratedFactoryID(ref int lastFactoryID)
         {
