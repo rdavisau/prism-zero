@@ -1,12 +1,34 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="DryIocZero/DryIocZero.props" />
+
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DryIocZero" Version="4.1.0-preview-02" />
     <PackageReference Include="Prism.Forms" Version="7.2.0.1422" />
     <PackageReference Include="Xamarin.Forms" Version="4.4.0.991265" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="DryIocZero\Container.Generated.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Container.Generated.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="DryIocZero\Container.Generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Container.Generated.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
 
 </Project>
