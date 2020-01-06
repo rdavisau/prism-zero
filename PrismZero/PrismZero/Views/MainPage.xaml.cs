@@ -7,7 +7,7 @@ using Xamarin.Forms;
 
 namespace PrismZero.Views
 {
-    public partial class MainPage : ContentPage
+    public partial class MainPage : BasePage
     {
         public MainPage()
         {

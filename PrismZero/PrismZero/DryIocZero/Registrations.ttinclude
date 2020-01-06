@@ -17,6 +17,9 @@
 <#@ assembly Name="%USERPROFILE%\.nuget\packages\system.text.json\4.7.0\lib\netstandard2.0\system.text.json.dll" #>
 <#@ assembly Name="%USERPROFILE%\.nuget\packages\system.runtime.compilerservices.unsafe\4.7.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll" #>
 <#@ assembly Name="%USERPROFILE%\.nuget\packages\system.buffers\4.4.0\lib\netstandard2.0\System.Buffers.dll" #>
+<#@ import Namespace="PrismZero" #>
+<#@ import Namespace="PrismZero.Views" #>
+<#@ import Namespace="PrismZero.Services" #>
 <#@ import Namespace="System" #>
 <#@ import Namespace="System.Collections.Generic" #>
 <#@ import Namespace="System.Linq" #>
@@ -25,26 +28,114 @@
 <#@ import Namespace="ImTools" #>
 <#+
 
+public HashSet<(Type type, object key)> RegisteredServices = new HashSet<(Type, object)>();
+public List<(string Page, string ViewModel)> PageTypes = new List<(string, string)>();
+
 // TODO: Specify the container and registrations ...
 IContainer GetContainerWithRegistrations()
 {
-    var container = new Container();
+    var container = 
+        new Container(rules => 
+            rules.WithoutThrowOnRegisteringDisposableTransient()
+                 .WithAutoConcreteTypeResolution()
+                 .With(Made.Of(FactoryMethod.ConstructorWithResolvableArguments))
+                 .WithoutThrowOnRegisteringDisposableTransient()
+                 .WithFuncAndLazyWithoutRegistration()
+                 .WithDefaultIfAlreadyRegistered(IfAlreadyRegistered.Replace));
 
-    // NOTE: `RegisterDelegate` and `UseInstance` are not supported because of runtime state usage. 
-    // Instead you can use `RegisterPlaceholder` to fix object graph generation, then fill in
-    // placeholder using run-time `DryIocZero.RegisterDelegate` and `DryIocZero.UseInstance`
+    var asm = typeof(ServiceBase).Assembly;
+    asm = LoadAssemblyWithDependencies(asm.Location);
+	      
+    RegisterPrismTypes(asm, container);
+    RegisterServices(asm, container);
+    RegisterViews(asm, container);
 
-    // TODO: Add registrations ...
-    // container.Register<IMyService, MyService>();
-    // container.RegisterMany(new[] { MyAssembly });
+    // since the container extension depends on the generated container
+    // we register this as a placeholder
+    container.RegisterPlaceholder(FindType("Prism.Ioc.IContainerExtension"));
+
+    // inspect the container for registrations so we can generate a crude 
+    // IsRegistered implementation
+    WriteRegistrations(container);
 
     return container;
+}
+
+public void RegisterPrismTypes(Assembly asm, IContainer container)
+{
+    var types = new Dictionary<Type, Type>
+    {
+        [FindType("Prism.Navigation.INavigationService")] = FindType("Prism.Navigation.PageNavigationService"),
+        [FindType("Prism.Behaviors.IPageBehaviorFactory")] = FindType("Prism.Behaviors.PageBehaviorFactory"),
+        [FindType("Prism.Common.IApplicationProvider")] = FindType("Prism.Common.ApplicationProvider"),
+        [FindType("Prism.Logging.ILoggerFacade")] = FindType("Prism.Logging.EmptyLogger"),
+        [FindType("Prism.AppModel.IApplicationStore")] = FindType("Prism.AppModel.ApplicationStore"),
+        [FindType("Prism.Events.IEventAggregator")] = FindType("Prism.Events.EventAggregator"),
+        [FindType("Prism.Services.IPageDialogService")] = FindType("Prism.Services.PageDialogService"),
+        [FindType("Prism.Services.Dialogs.IDialogService")] = FindType("Prism.Services.Dialogs.DialogService"),
+        [FindType("Prism.Services.IDeviceService")] = FindType("Prism.Services.DeviceService"),
+        [FindType("Prism.Modularity.IModuleCatalog")] = FindType("Prism.Modularity.ModuleCatalog"),
+        [FindType("Prism.Modularity.IModuleManager")] = FindType("Prism.Modularity.ModuleManager"),
+        [FindType("Prism.Modularity.IModuleInitializer")] = FindType("Prism.Modularity.ModuleInitializer")
+    };
+
+    foreach (var t in types)
+        container.Register(t.Key, t.Value);
+
+    // nav service needs to be registered with a service key too
+    container.Register(
+        FindType("Prism.Navigation.INavigationService"), 
+        FindType("Prism.Navigation.PageNavigationService"), 
+        serviceKey: "PageNavigationService");
+} 
+
+public void RegisterServices(Assembly asm, IContainer container)
+{
+    var serviceTypes = GetTypesFromAssembly(asm, t => t.IsSubclassOf(typeof(ServiceBase))).ToArray();
+    
+    foreach (var serviceType in serviceTypes)
+        foreach (var @if in ReflectionTools.GetImplementedInterfaces(serviceType))
+            container.Register(@if, serviceType, Reuse.Singleton);
+}
+
+public void RegisterViews(Assembly asm, IContainer container)
+{
+    var pageTypes = GetTypesFromAssembly(asm, t => t.IsSubclassOf(typeof(BasePage))).ToArray();
+
+    // register nav page
+    container.Register(typeof(object), FindType("Xamarin.Forms.NavigationPage"), serviceKey: "NavigationPage");
+
+    // register all our pages and matching vm
+    // assumes matching vm exists, 1->1 relationship, ignores namespaces, etc.
+    // this might not be valid for you, in which case this will blow up
+    foreach(var pageType in pageTypes)
+    {
+        var vmType = GetTypesFromAssembly(asm, t => t.Name == pageType.Name + "ViewModel").First();
+        
+        // register page type
+        container.Register(pageType);
+
+        // prism wants it as a named registration against object, so maybe the above is unneccessary 
+        container.Register(typeof(object), pageType, serviceKey: pageType.Name); 
+        
+        // register the vm
+        container.Register(vmType);
+
+        // keep track of the pair of types so we can generate our "register pages" method later
+        PageTypes.Add(($"{pageType.Namespace}.{pageType.Name}", $"{vmType.Namespace}.{vmType.Name}"));
+    }
 }
 
 // TODO: For each passed registration specify what resolution roots it provides, null if none
 ServiceInfo[] SpecifyResolutionRoots(ServiceRegistrationInfo reg)
 {
-    return reg.AsResolutionRoot ? reg.ToServiceInfo().One() : null;
+    // you should only return roots for types that need to be directly resolved
+    // here we return roots for all types (bad)
+    // more roots = more branches before hitting the resolve implementation
+    return reg.ToServiceInfo().One();
+
+    // if you annotate your registrations with the as resolution root flag then this rule is good
+    // return reg.AsResolutionRoot ? reg.ToServiceInfo().One() : null;
 }
 
 // TODO: Additional roots to generate ...
@@ -116,4 +207,13 @@ public static IEnumerable<Type> GetLoadableTypes(Assembly assembly)
     try { return assembly.GetTypes(); }
     catch (ReflectionTypeLoadException e) { return e.Types.Where(t => t != null); }
 }
+
+void WriteRegistrations(IContainer container)
+{
+    // this is not perfect, considers placeholders to be registered
+    // even if they haven't yet been filled etc.
+    foreach(var reg in container.GetServiceRegistrations())
+        RegisteredServices.Add((reg.ServiceType, reg.OptionalServiceKey));
+}
+
 #>
