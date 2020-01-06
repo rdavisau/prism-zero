@@ -22,13 +22,25 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
+ 
 
 /*
 ========================================================================================================
 NOTE: The code below is generated automatically at compile-time and not supposed to be changed by hand.
 ========================================================================================================
-Generation is completed successfully.
+There are 1 generation issues (may be not an error dependent on context):
+
+The issues with run-time registrations may be solved by `container.RegisterPlaceholder<T>()` 
+in Registrations.ttinclude. Then you can replace placeholders using `DryIocZero.Container.Register`
+at runtime.
+
 --------------------------------------------------------------------------------------------------------
+1. Prism.Ioc.IContainerExtension
+Error: There is no real implementation, only a placeholder for the service Prism.Ioc.IContainerExtension FactoryId=1 IsResolutionCall
+  from Container without Scope
+ with Rules with {ThrowIfRuntimeStateRequired, FuncAndLazyWithoutRegistration, AutoConcreteTypeResolution, UsedForExpressionGeneration} and without {ThrowOnRegisteringDisposableTransient, ImplicitCheckForReuseMatchingScope, EagerCachingSingletonForFasterAccess}
+ with Made={FactoryMethod=ConstructorWithResolvableArguments}.
+Please Register the implementation with the ifAlreadyRegistered.Replace parameter to fill the placeholder.
 */
 
 using System;
@@ -42,23 +54,202 @@ using static DryIocZero.ResolveManyResult;
 
 namespace DryIocZero
 {
-    partial class Container
-    {
+    partial class Container : PrismZero.DryIocZero.IZeroContainer
+    {    
+        [ExcludeFromCodeCoverage]
+        public void RegisterPageTypes()
+        {  
+            // (PrismZero.Views.MainPage, PrismZero.ViewModels.MainPageViewModel)
+            {
+                var pageType = typeof(PrismZero.Views.MainPage);
+                var vmType = typeof(PrismZero.ViewModels.MainPageViewModel);
+
+                Prism.Mvvm.ViewModelLocationProvider.Register(pageType.Name, vmType);
+                Prism.Navigation.PageNavigationRegistry.Register(pageType.Name, pageType);
+            }
+  
+            // (PrismZero.Views.SecondPage, PrismZero.ViewModels.SecondPageViewModel)
+            {
+                var pageType = typeof(PrismZero.Views.SecondPage);
+                var vmType = typeof(PrismZero.ViewModels.SecondPageViewModel);
+
+                Prism.Mvvm.ViewModelLocationProvider.Register(pageType.Name, vmType);
+                Prism.Navigation.PageNavigationRegistry.Register(pageType.Name, pageType);
+            }
+        }
+
+        public bool IsRegistered(Type type, object key = null)
+        {
+            if (type == typeof(Prism.AppModel.IApplicationStore) && key is null)
+                return true;
+            else 
+            if (type == typeof(PrismZero.Services.Hello.IHelloService) && key is null)
+                return true;
+            else 
+            if (type == typeof(Prism.Ioc.IContainerExtension) && key is null)
+                return true;
+            else 
+            if (type == typeof(Prism.Services.IPageDialogService) && key is null)
+                return true;
+            else 
+            if (type == typeof(Prism.Modularity.IModuleInitializer) && key is null)
+                return true;
+            else 
+            if (type == typeof(Prism.Events.IEventAggregator) && key is null)
+                return true;
+            else 
+            if (type == typeof(Prism.Modularity.IModuleCatalog) && key is null)
+                return true;
+            else 
+            if (type == typeof(Prism.Services.IDeviceService) && key is null)
+                return true;
+            else 
+            if (type == typeof(Prism.Behaviors.IPageBehaviorFactory) && key is null)
+                return true;
+            else 
+            if (type == typeof(PrismZero.ViewModels.MainPageViewModel) && key is null)
+                return true;
+            else 
+            if (type == typeof(Prism.Modularity.IModuleManager) && key is null)
+                return true;
+            else 
+            if (type == typeof(Prism.Services.Dialogs.IDialogService) && key is null)
+                return true;
+            else 
+            if (type == typeof(Prism.Common.IApplicationProvider) && key is null)
+                return true;
+            else 
+            if (type == typeof(PrismZero.ViewModels.SecondPageViewModel) && key is null)
+                return true;
+            else 
+            if (type == typeof(Prism.Navigation.INavigationService) && key.Equals("DefaultKey(0)"))
+                return true;
+            else
+            if (type == typeof(Prism.Navigation.INavigationService) && key.Equals("PageNavigationService"))
+                return true;
+            else
+            if (type == typeof(PrismZero.Views.MainPage) && key is null)
+                return true;
+            else 
+            if (type == typeof(PrismZero.Views.SecondPage) && key is null)
+                return true;
+            else 
+            if (type == typeof(System.Object) && key.Equals("NavigationPage"))
+                return true;
+            else
+            if (type == typeof(System.Object) && key.Equals("SecondPage"))
+                return true;
+            else
+            if (type == typeof(System.Object) && key.Equals("MainPage"))
+                return true;
+            else
+            if (type == typeof(Prism.Logging.ILoggerFacade) && key is null)
+                return true;
+            else 
+            return false;
+        }
+
         [ExcludeFromCodeCoverage]
         partial void GetLastGeneratedFactoryID(ref int lastFactoryID)
         {
-            lastFactoryID = 27; // generated: equals to last used Factory.FactoryID 
+            lastFactoryID = 51; // generated: equals to last used Factory.FactoryID 
         }
 
         [ExcludeFromCodeCoverage]
         partial void ResolveGenerated(ref object service, Type serviceType)
         {
+            if (serviceType == typeof(Prism.AppModel.IApplicationStore))
+                service = Get0_IApplicationStore(this);
+
+            else
+            if (serviceType == typeof(PrismZero.Services.Hello.IHelloService))
+                service = Get1_IHelloService(this);
+
+            else
+            if (serviceType == typeof(Prism.Services.IPageDialogService))
+                service = Get2_IPageDialogService(this);
+
+            else
+            if (serviceType == typeof(Prism.Modularity.IModuleInitializer))
+                service = Get3_IModuleInitializer(this);
+
+            else
+            if (serviceType == typeof(Prism.Events.IEventAggregator))
+                service = Get4_IEventAggregator(this);
+
+            else
+            if (serviceType == typeof(Prism.Modularity.IModuleCatalog))
+                service = Get5_IModuleCatalog(this);
+
+            else
+            if (serviceType == typeof(Prism.Services.IDeviceService))
+                service = Get6_IDeviceService(this);
+
+            else
+            if (serviceType == typeof(Prism.Behaviors.IPageBehaviorFactory))
+                service = Get7_IPageBehaviorFactory(this);
+
+            else
+            if (serviceType == typeof(PrismZero.ViewModels.MainPageViewModel))
+                service = Get8_MainPageViewModel(this);
+
+            else
+            if (serviceType == typeof(Prism.Modularity.IModuleManager))
+                service = Get9_IModuleManager(this);
+
+            else
+            if (serviceType == typeof(Prism.Services.Dialogs.IDialogService))
+                service = Get10_IDialogService(this);
+
+            else
+            if (serviceType == typeof(Prism.Common.IApplicationProvider))
+                service = Get11_IApplicationProvider(this);
+
+            else
+            if (serviceType == typeof(PrismZero.ViewModels.SecondPageViewModel))
+                service = Get12_SecondPageViewModel(this);
+
+            else
+            if (serviceType == typeof(PrismZero.Views.MainPage))
+                service = Get15_MainPage(this);
+
+            else
+            if (serviceType == typeof(PrismZero.Views.SecondPage))
+                service = Get16_SecondPage(this);
+
+            else
+            if (serviceType == typeof(Prism.Logging.ILoggerFacade))
+                service = Get20_ILoggerFacade(this);
         }
 
         [ExcludeFromCodeCoverage]
         partial void ResolveGenerated(ref object service,
             Type serviceType, object serviceKey, Type requiredServiceType, Request preRequestParent, object[] args)
         {
+            if (serviceType == typeof(Prism.Navigation.INavigationService)) 
+            {
+                if (DefaultKey.Of(0).Equals(serviceKey))
+                    service = Get13_INavigationService(this);
+
+                else
+                if ("PageNavigationService".Equals(serviceKey))
+                    service = Get14_INavigationService(this);
+            }
+
+            else
+            if (serviceType == typeof(object)) 
+            {
+                if ("NavigationPage".Equals(serviceKey))
+                    service = Get17_Object(this);
+
+                else
+                if ("SecondPage".Equals(serviceKey))
+                    service = Get18_Object(this);
+
+                else
+                if ("MainPage".Equals(serviceKey))
+                    service = Get19_Object(this);
+            }
         }
 
         [ExcludeFromCodeCoverage]
@@ -70,7 +261,225 @@ namespace DryIocZero
         [ExcludeFromCodeCoverage]
         private IEnumerable<ResolveManyResult> ResolveManyGenerated(Type serviceType)
         {
-            yield break;
+            if (serviceType == typeof(Prism.AppModel.IApplicationStore))
+            {
+                yield return Of(Get0_IApplicationStore);
+            }
+
+            if (serviceType == typeof(PrismZero.Services.Hello.IHelloService))
+            {
+                yield return Of(Get1_IHelloService);
+            }
+
+            if (serviceType == typeof(Prism.Services.IPageDialogService))
+            {
+                yield return Of(Get2_IPageDialogService);
+            }
+
+            if (serviceType == typeof(Prism.Modularity.IModuleInitializer))
+            {
+                yield return Of(Get3_IModuleInitializer);
+            }
+
+            if (serviceType == typeof(Prism.Events.IEventAggregator))
+            {
+                yield return Of(Get4_IEventAggregator);
+            }
+
+            if (serviceType == typeof(Prism.Modularity.IModuleCatalog))
+            {
+                yield return Of(Get5_IModuleCatalog);
+            }
+
+            if (serviceType == typeof(Prism.Services.IDeviceService))
+            {
+                yield return Of(Get6_IDeviceService);
+            }
+
+            if (serviceType == typeof(Prism.Behaviors.IPageBehaviorFactory))
+            {
+                yield return Of(Get7_IPageBehaviorFactory);
+            }
+
+            if (serviceType == typeof(PrismZero.ViewModels.MainPageViewModel))
+            {
+                yield return Of(Get8_MainPageViewModel);
+            }
+
+            if (serviceType == typeof(Prism.Modularity.IModuleManager))
+            {
+                yield return Of(Get9_IModuleManager);
+            }
+
+            if (serviceType == typeof(Prism.Services.Dialogs.IDialogService))
+            {
+                yield return Of(Get10_IDialogService);
+            }
+
+            if (serviceType == typeof(Prism.Common.IApplicationProvider))
+            {
+                yield return Of(Get11_IApplicationProvider);
+            }
+
+            if (serviceType == typeof(PrismZero.ViewModels.SecondPageViewModel))
+            {
+                yield return Of(Get12_SecondPageViewModel);
+            }
+
+            if (serviceType == typeof(Prism.Navigation.INavigationService))
+            {
+                yield return Of(Get13_INavigationService, DefaultKey.Of(0));
+                yield return Of(Get14_INavigationService, "PageNavigationService");
+            }
+
+            if (serviceType == typeof(PrismZero.Views.MainPage))
+            {
+                yield return Of(Get15_MainPage);
+            }
+
+            if (serviceType == typeof(PrismZero.Views.SecondPage))
+            {
+                yield return Of(Get16_SecondPage);
+            }
+
+            if (serviceType == typeof(object))
+            {
+                yield return Of(Get17_Object, "NavigationPage");
+                yield return Of(Get18_Object, "SecondPage");
+                yield return Of(Get19_Object, "MainPage");
+            }
+
+            if (serviceType == typeof(Prism.Logging.ILoggerFacade))
+            {
+                yield return Of(Get20_ILoggerFacade);
+            }
+
+        }
+
+        // typeof(Prism.AppModel.IApplicationStore)
+        internal static object Get0_IApplicationStore(IResolverContext r)
+        {
+            return new Prism.AppModel.ApplicationStore();
+        }
+
+        // typeof(PrismZero.Services.Hello.IHelloService)
+        internal static object Get1_IHelloService(IResolverContext r)
+        {
+            return (PrismZero.Services.Hello.HelloService)r.SingletonScope.GetOrAdd(41, () => new PrismZero.Services.Hello.HelloService(), 0);
+        }
+
+        // typeof(Prism.Services.IPageDialogService)
+        internal static object Get2_IPageDialogService(IResolverContext r)
+        {
+            return new Prism.Services.PageDialogService(new Prism.Common.ApplicationProvider());
+        }
+
+        // typeof(Prism.Modularity.IModuleInitializer)
+        internal static object Get3_IModuleInitializer(IResolverContext r)
+        {
+            return new Prism.Modularity.ModuleInitializer((Prism.Ioc.IContainerExtension)r.Resolve(typeof(Prism.Ioc.IContainerExtension), null, IfUnresolved.Throw, default(System.Type), Request.Empty.Push(typeof(Prism.Modularity.IModuleInitializer), default(System.Type), null, 39, FactoryType.Service, typeof(Prism.Modularity.ModuleInitializer), Reuse.Transient, RequestFlags.IsResolutionCall), default(object[])));
+        }
+
+        // typeof(Prism.Events.IEventAggregator)
+        internal static object Get4_IEventAggregator(IResolverContext r)
+        {
+            return new Prism.Events.EventAggregator();
+        }
+
+        // typeof(Prism.Modularity.IModuleCatalog)
+        internal static object Get5_IModuleCatalog(IResolverContext r)
+        {
+            return new Prism.Modularity.ModuleCatalog();
+        }
+
+        // typeof(Prism.Services.IDeviceService)
+        internal static object Get6_IDeviceService(IResolverContext r)
+        {
+            return new Prism.Services.DeviceService();
+        }
+
+        // typeof(Prism.Behaviors.IPageBehaviorFactory)
+        internal static object Get7_IPageBehaviorFactory(IResolverContext r)
+        {
+            return new Prism.Behaviors.PageBehaviorFactory();
+        }
+
+        // typeof(PrismZero.ViewModels.MainPageViewModel)
+        internal static object Get8_MainPageViewModel(IResolverContext r)
+        {
+            return new PrismZero.ViewModels.MainPageViewModel(new Prism.Navigation.PageNavigationService((Prism.Ioc.IContainerExtension)r.Resolve(typeof(Prism.Ioc.IContainerExtension), null, IfUnresolved.Throw, default(System.Type), Request.Empty.Push(typeof(PrismZero.ViewModels.MainPageViewModel), default(System.Type), null, 45, FactoryType.Service, typeof(PrismZero.ViewModels.MainPageViewModel), Reuse.Transient, RequestFlags.IsResolutionCall).Push(typeof(Prism.Navigation.INavigationService), 28, typeof(Prism.Navigation.PageNavigationService), Reuse.Transient), default(object[])), new Prism.Common.ApplicationProvider(), new Prism.Behaviors.PageBehaviorFactory(), new Prism.Logging.EmptyLogger()), (PrismZero.Services.Hello.HelloService)r.SingletonScope.GetOrAdd(41, () => new PrismZero.Services.Hello.HelloService(), 0));
+        }
+
+        // typeof(Prism.Modularity.IModuleManager)
+        internal static object Get9_IModuleManager(IResolverContext r)
+        {
+            return new Prism.Modularity.ModuleManager(new Prism.Modularity.ModuleInitializer((Prism.Ioc.IContainerExtension)r.Resolve(typeof(Prism.Ioc.IContainerExtension), null, IfUnresolved.Throw, default(System.Type), Request.Empty.Push(typeof(Prism.Modularity.IModuleManager), default(System.Type), null, 38, FactoryType.Service, typeof(Prism.Modularity.ModuleManager), Reuse.Transient, RequestFlags.IsResolutionCall).Push(typeof(Prism.Modularity.IModuleInitializer), 39, typeof(Prism.Modularity.ModuleInitializer), Reuse.Transient), default(object[]))), new Prism.Modularity.ModuleCatalog());
+        }
+
+        // typeof(Prism.Services.Dialogs.IDialogService)
+        internal static object Get10_IDialogService(IResolverContext r)
+        {
+            return new Prism.Services.Dialogs.DialogService(new Prism.Common.ApplicationProvider(), (Prism.Ioc.IContainerExtension)r.Resolve(typeof(Prism.Ioc.IContainerExtension), null, IfUnresolved.Throw, default(System.Type), Request.Empty.Push(typeof(Prism.Services.Dialogs.IDialogService), default(System.Type), null, 35, FactoryType.Service, typeof(Prism.Services.Dialogs.DialogService), Reuse.Transient, RequestFlags.IsResolutionCall), default(object[])));
+        }
+
+        // typeof(Prism.Common.IApplicationProvider)
+        internal static object Get11_IApplicationProvider(IResolverContext r)
+        {
+            return new Prism.Common.ApplicationProvider();
+        }
+
+        // typeof(PrismZero.ViewModels.SecondPageViewModel)
+        internal static object Get12_SecondPageViewModel(IResolverContext r)
+        {
+            return new PrismZero.ViewModels.SecondPageViewModel(new Prism.Navigation.PageNavigationService((Prism.Ioc.IContainerExtension)r.Resolve(typeof(Prism.Ioc.IContainerExtension), null, IfUnresolved.Throw, default(System.Type), Request.Empty.Push(typeof(PrismZero.ViewModels.SecondPageViewModel), default(System.Type), null, 48, FactoryType.Service, typeof(PrismZero.ViewModels.SecondPageViewModel), Reuse.Transient, RequestFlags.IsResolutionCall).Push(typeof(Prism.Navigation.INavigationService), 28, typeof(Prism.Navigation.PageNavigationService), Reuse.Transient), default(object[])), new Prism.Common.ApplicationProvider(), new Prism.Behaviors.PageBehaviorFactory(), new Prism.Logging.EmptyLogger()));
+        }
+
+        // typeof(Prism.Navigation.INavigationService)
+        internal static object Get13_INavigationService(IResolverContext r)
+        {
+            return new Prism.Navigation.PageNavigationService((Prism.Ioc.IContainerExtension)r.Resolve(typeof(Prism.Ioc.IContainerExtension), null, IfUnresolved.Throw, default(System.Type), Request.Empty.Push(typeof(Prism.Navigation.INavigationService), default(System.Type), DefaultKey.Of(0), 28, FactoryType.Service, typeof(Prism.Navigation.PageNavigationService), Reuse.Transient, RequestFlags.IsResolutionCall), default(object[])), new Prism.Common.ApplicationProvider(), new Prism.Behaviors.PageBehaviorFactory(), new Prism.Logging.EmptyLogger());
+        }
+
+        // typeof(Prism.Navigation.INavigationService)
+        internal static object Get14_INavigationService(IResolverContext r)
+        {
+            return new Prism.Navigation.PageNavigationService((Prism.Ioc.IContainerExtension)r.Resolve(typeof(Prism.Ioc.IContainerExtension), null, IfUnresolved.Throw, default(System.Type), Request.Empty.Push(typeof(Prism.Navigation.INavigationService), default(System.Type), "PageNavigationService", 40, FactoryType.Service, typeof(Prism.Navigation.PageNavigationService), Reuse.Transient, RequestFlags.IsResolutionCall), default(object[])), new Prism.Common.ApplicationProvider(), new Prism.Behaviors.PageBehaviorFactory(), new Prism.Logging.EmptyLogger());
+        }
+
+        // typeof(PrismZero.Views.MainPage)
+        internal static object Get15_MainPage(IResolverContext r)
+        {
+            return new PrismZero.Views.MainPage();
+        }
+
+        // typeof(PrismZero.Views.SecondPage)
+        internal static object Get16_SecondPage(IResolverContext r)
+        {
+            return new PrismZero.Views.SecondPage();
+        }
+
+        // typeof(object)
+        internal static object Get17_Object(IResolverContext r)
+        {
+            return new Xamarin.Forms.NavigationPage(new Xamarin.Forms.Page());
+        }
+
+        // typeof(object)
+        internal static object Get18_Object(IResolverContext r)
+        {
+            return new PrismZero.Views.SecondPage();
+        }
+
+        // typeof(object)
+        internal static object Get19_Object(IResolverContext r)
+        {
+            return new PrismZero.Views.MainPage();
+        }
+
+        // typeof(Prism.Logging.ILoggerFacade)
+        internal static object Get20_ILoggerFacade(IResolverContext r)
+        {
+            return new Prism.Logging.EmptyLogger();
         }
 
     }
